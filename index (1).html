@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Birthday Surprise</title>
+  
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: black;
+      overflow: hidden;
+      font-family: Arial, sans-serif;
+    }
+
+    canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+
+    .start-button {
+      position: absolute;
+      top: 50%;
+      font-family: Arial;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: linear-gradient(45deg, #ff6ec4, #7873f5);
+      color: white;
+      font-size: 6vw;
+      padding: 20px 40px;
+      border: none;
+      border-radius: 20px;
+      box-shadow: 0 0 20px white;
+      z-index: 100;
+    }
+
+    .letter {
+      position: absolute;
+      font-family: 'Comic Sans MS', cursive, sans-serif;
+      font-size: 5vw;
+      font-weight: bold;
+      color: gold;
+      text-shadow: 2px 2px 8px white;
+      opacity: 0;
+      transition: transform 2s ease, opacity 2s ease;
+      z-index: 10;
+    }
+
+    .letter.show {
+      opacity: 1;
+    }
+
+    .letter.moveUp {
+      transform: translateY(-60vh);
+    }
+
+    .cake {
+      position: absolute;
+      bottom: -300px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: bottom 1s ease;
+      z-index: 10;
+    }
+
+    .cake-layer {
+      background-color: #ff69b4;
+      border: 4px solid #fff;
+      border-radius: 12px;
+      margin: 6px 0;
+      display: none;
+      box-shadow: 0 0 15px #ffb6c1;
+    }
+
+    .layer1 { width: 200px; height: 50px; }
+    .layer2 { width: 140px; height: 40px; }
+    .layer3 { width: 80px; height: 30px; }
+
+    .candle {
+      width: 12px;
+      height: 30px;
+      background: white;
+      border-radius: 2px;
+      position: relative;
+      display: none;
+      margin-top: -10px;
+    }
+
+    .flame {
+      width: 12px;
+      height: 12px;
+      background: orange;
+      border-radius: 50%;
+      position: absolute;
+      top: -14px;
+      left: 0;
+      right: 0;
+      margin: auto;
+      animation: flicker 0.3s infinite alternate;
+      box-shadow: 0 0 12px orange;
+    }
+
+    @keyframes flicker {
+      0% { transform: scale(1); opacity: 1; }
+      100% { transform: scale(1.3); opacity: 0.8; }
+    }
+
+    #finalText {
+      position: absolute;
+      bottom: -100px;
+      width: 100%;
+      text-align: center;
+      font-size: 6vw;
+      font-weight: bold;
+      background: linear-gradient(90deg, gold, hotpink);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 2px 2px 10px rgba(255,255,255,0.3);
+      opacity: 0;
+      transform: translateY(0);
+      transition: transform 2s ease, opacity 2s ease;
+      z-index: 10;
+    }
+
+    #finalText.show {
+      opacity: 1;
+      transform: translateY(-30vh);
+      font-family: 'Pacifico', cursive;
+    }
+
+    #muteBtn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: none;
+      background-color: rgba(255,255,255,0.2);
+      color: white;
+      z-index: 100;
+    }
+
+    .balloon {
+      position: absolute;
+      width: 30px;
+      height: 40px;
+      background-color: red;
+      border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+      box-shadow: 0 0 10px rgba(255,0,0,0.4);
+      animation: float 6s infinite ease-in-out;
+      z-index: 9;
+    }
+
+    @keyframes float {
+      0% { transform: translateY(0); }
+      50% { transform: translateY(-100px); }
+      100% { transform: translateY(0); }
+    }
+.gift-box {
+  width: 40px;
+  height: 40px;
+  background-color: hotpink;
+  border: 2px solid white;
+  border-radius: 10px;
+  position: absolute;
+  top: 60px;
+  right: 5vw;
+  box-shadow: 0 0 20px white;
+  cursor: pointer;
+  animation: pulse 1.2s infinite ease-in-out;
+  z-index: 20;
+  transform-style: preserve-3d;
+  transition: transform 1s;
+}
+.gift-box.flipped {
+  transform: rotateY(180deg);
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); box-shadow: 0 0 10px white; }
+  50% { transform: scale(1.1); box-shadow: 0 0 20px #ffc0cb; }
+  100% { transform: scale(1); box-shadow: 0 0 10px white; }
+}
+
+.message-card {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  width: 80vw;
+  max-width: 400px;
+  padding: 20px;
+  background: #fff0f5;
+  border-radius: 15px;
+  box-shadow: 0 0 30px pink;
+  text-align: center;
+  font-size: 4vw;
+  color: #333;
+  transition: transform 0.5s ease, opacity 0.5s ease;
+  opacity: 0;
+  z-index: 30;
+}
+
+.message-card.show {
+  transform: translate(-50%, -50%) scale(1);
+  opacity: 1;
+}
+
+.message-card button {
+  margin-top: 15px;
+  padding: 5px 15px;
+  background: hotpink;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 4vw;
+  cursor: pointer;
+  box-shadow: 0 0 10px #ff69b4;
+}
+  </style>
+</head>
+<body>
+
+<canvas id="fireCanvas"></canvas>
+<button class="start-button" onclick="startShow()">click</button>
+<button id="muteBtn" onclick="toggleAudio()">🔊</button>
+<div id="lettersContainer"></div>
+<div class="cake" id="cake">
+  <div class="candle"><div class="flame"></div></div>
+  <div class="cake-layer layer3"></div>
+  <div class="cake-layer layer2"></div>
+  <div class="cake-layer layer1"></div>
+</div>
+<div id="finalText">HAPPY BIRTHDAY MWHEHEHE</div>
+<audio id="bgMusic" loop>
+  <source src="eloi.mp3" type="audio/mp3" />
+</audio>
+
+<script>
+const canvas = document.getElementById("fireCanvas");
+const ctx = canvas.getContext("2d");
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+let showStarted = false;
+
+function startShow() {
+  document.querySelector(".start-button").style.display = "none";
+  document.getElementById("bgMusic").play();
+  generateFireworks();
+  animate();
+  generateStars();
+  createConfetti();
+  generateBalloon();
+}
+
+const message = "HAPPYBIRTHDAY";
+const lettersContainer = document.getElementById("lettersContainer");
+const fireworks = [];
+let shownLetters = 0;
+
+const gridPositions = [];
+const spacingX = canvas.width / 13;
+const yPosition = canvas.height * 0.75;
+
+for (let i = 0; i < message.length; i++) {
+  gridPositions.push({
+    x: spacingX * (i + 1),
+    y: yPosition,
+    char: message[i]
+  });
+}
+
+class Firework {
+  constructor(target) {
+    this.x = target.x;
+    this.y = canvas.height;
+    this.target = target;
+    this.speed = 8;
+    this.exploded = false;
+    this.color = `hsl(${Math.random() * 360}, 100%, 60%)`;
+    this.particles = [];
+  }
+
+  update() {
+    if (!this.exploded) {
+      this.y -= this.speed;
+      if (this.y <= this.target.y) {
+        this.exploded = true;
+        this.explode();
+        showLetter(this.target);
+      }
+    } else {
+      this.particles.forEach(p => p.update());
+      this.particles = this.particles.filter(p => p.alpha > 0);
+    }
+  }
+
+  explode() {
+    for (let i = 0; i < 40; i++) {
+      this.particles.push(new Particle(this.target.x, this.target.y, this.color));
+    }
+  }
+
+  draw() {
+    if (!this.exploded) {
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, 3, 0, Math.PI * 2);
+      ctx.fillStyle = this.color;
+      ctx.fill();
+    } else {
+      this.particles.forEach(p => p.draw());
+    }
+  }
+}
+
+class Particle {
+  constructor(x, y, color) {
+    this.x = x;
+    this.y = y;
+    this.vx = (Math.random() - 0.5) * 6;
+    this.vy = (Math.random() - 0.5) * 6;
+    this.alpha = 1;
+    this.color = color;
+  }
+
+  update() {
+    this.x += this.vx;
+    this.y += this.vy;
+    this.alpha -= 0.02;
+  }
+
+  draw() {
+    ctx.save();
+    ctx.globalAlpha = this.alpha;
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, 2, 0, Math.PI * 2);
+    ctx.fillStyle = this.color;
+    ctx.fill();
+    ctx.restore();
+  }
+}
+
+function showLetter(target) {
+  const span = document.createElement("span");
+  span.className = "letter show";
+  span.textContent = target.char;
+  span.style.left = (target.x - 20) + "px";
+  span.style.top = (target.y - 40) + "px";
+  lettersContainer.appendChild(span);
+
+  shownLetters++;
+  if (shownLetters === message.length) {
+    setTimeout(() => moveUpLetters(), 2000);
+  }
+}
+
+function moveUpLetters() {
+  const allLetters = document.querySelectorAll(".letter");
+  allLetters.forEach(letter => letter.classList.add("moveUp"));
+  setTimeout(() => showCake(), 3000);
+}
+
+function showCake() {
+  const cake = document.getElementById("cake");
+  cake.style.bottom = "25vh";
+  setTimeout(() => cake.querySelector(".layer1").style.display = "block", 500);
+  setTimeout(() => cake.querySelector(".layer2").style.display = "block", 1000);
+  setTimeout(() => cake.querySelector(".layer3").style.display = "block", 1500);
+  setTimeout(() => cake.querySelector(".candle").style.display = "block", 2000);
+  setTimeout(() => document.getElementById("finalText").classList.add("show"), 3000);
+}
+
+function animate() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  fireworks.forEach(f => {
+    f.update();
+    f.draw();
+  });
+  requestAnimationFrame(animate);
+}
+
+function generateFireworks() {
+  gridPositions.forEach((pos, i) => {
+    setTimeout(() => {
+      fireworks.push(new Firework(pos));
+    }, i * 400);
+  });
+}
+
+function generateStars() {
+  for (let i = 0; i < 150; i++) {
+    const star = document.createElement("div");
+    star.style.position = "absolute";
+    star.style.top = Math.random() * window.innerHeight + "px";
+    star.style.left = Math.random() * window.innerWidth + "px";
+    star.style.width = "2px";
+    star.style.height = "2px";
+    star.style.background = "white";
+    star.style.opacity = Math.random();
+    document.body.appendChild(star);
+  }
+}
+
+function createConfetti() {
+  for (let i = 0; i < 50; i++) {
+    const dot = document.createElement("div");
+    dot.style.position = "absolute";
+    dot.style.left = Math.random() * window.innerWidth + "px";
+    dot.style.top = Math.random() * window.innerHeight + "px";
+    dot.style.width = "2px";
+    dot.style.height = "2px";
+    dot.style.borderRadius = "50%";
+    dot.style.background = `hsl(${Math.random() * 360}, 80%, 60%)`;
+    dot.style.opacity = "0.5";
+    document.body.appendChild(dot);
+  }
+}
+
+function generateBalloon() {
+  const balloon = document.createElement("div");
+  balloon.className = "balloon";
+  balloon.style.left = Math.random() * (window.innerWidth - 30) + "px";
+  document.body.appendChild(balloon);
+}
+
+function toggleAudio() {
+  const music = document.getElementById("bgMusic");
+  if (music.paused) {
+    music.play();
+    document.getElementById("muteBtn").textContent = "🔊";
+  } else {
+    music.pause();
+    document.getElementById("muteBtn").textContent = "🔇";
+  }
+}
+function showMessage() {
+  document.getElementById("giftBox").style.display = "none";
+  document.getElementById("messageCard").classList.add("show");
+}
+
+function hideMessage() {
+  document.getElementById("giftBox").style.display = "block";
+  document.getElementById("messageCard").classList.remove("show");
+}
+
+  const bgMusic = document.getElementById("bgMusic");
+
+  document.getElementById("startBtn").addEventListener("click", function () {
+    document.getElementById("birthdayMessage").style.display = "block";
+    document.getElementById("startBtn").style.display = "none";
+
+    // Play music on user interaction
+    bgMusic.play().catch(() => {
+      alert("Tap anywhere to enable sound!");
+    });
+  });
+
+  // Extra fallback: allow any screen tap to retry playing
+  document.addEventListener("click", function () {
+    if (bgMusic.paused) {
+      bgMusic.play().catch(() => {});
+    }
+  });
+</script>
+<div id="giftBox" class="gift-box" onclick="showMessage()"></div>
+<div id="messageCard" class="message-card">
+  <p>Happy Birthday Ate Eloisa and advance congratulations on your graduation!<br>
+  🎉 Wishing you a fantastic day filled with joy and success in this new chapter! 🎓
+  huhuhuhuhu</p>
+  <button onclick="hideMessage()">Back to Gift</button>
+</body>
+</html>
