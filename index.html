@@ -38,6 +38,7 @@
 
     .letter {
       position: absolute;
+      display: flex;
       font-family: 'Comic Sans MS', cursive, sans-serif;
       font-size: 5vw;
       font-weight: bold;
@@ -53,7 +54,7 @@
     }
 
     .letter.moveUp {
-      transform: translateY(-60vh);
+      transform: translateY(-120vh);
     }
 
     .cake {
@@ -364,7 +365,7 @@ function showLetter(target) {
 function moveUpLetters() {
   const allLetters = document.querySelectorAll(".letter");
   allLetters.forEach(letter => letter.classList.add("moveUp"));
-  setTimeout(() => showCake(), 4000);
+  setTimeout(() => showCake(), 3000);
 }
 
 function showCake() {
